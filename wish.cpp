@@ -45,6 +45,32 @@ char GetMode(int arg_c, char* arg_v[]) {
 }
 
 
+/*
+(use getline(), when hit EOF exit(0))
+---------------------------
+(getline (file descrip, 
+        buffer to put line, 
+        length limit of buff))
+---------------------------
+in_file_stream = input file stream
+    stdin passed for standard in
+    otherwise input file from fopen()
+puts line read into line_read_buff
+NNEED TO CHECK EEERRORS?
+*/
+int ReadCmd(FILE* in_file_stream, char** line_read_buff, size_t* buff_size) {
+    //getline(char ** restrict linep, 
+    //      size_t * restrict linecapp,
+     //      FILE * restrict stream);
+    // linep = buffer of line that was read
+    // linepcapp = size of buffer in memory 
+    //      both will get updated as needed
+    getline(line_read_buff, buff_size, in_file_stream);
+    cout<<"line "<<*line_read_buff<<endl;
+    return 1;
+}
+
+
 ///////// INTERACTIVE /////////
 /*
 writes prompt on std out 
@@ -54,65 +80,57 @@ same returns as write
 */
 int AskPrompt() {
     string prompt_mssg = "wish> ";
-    return write(STDOUT_FILENO, prompt_mssg.c_str(), 
-prompt_mssg.length());
-}
-
-/*
-(use getline(), when hit EOF exit(0))
-(getline (file descrip, 
-        buffer to put line, 
-        length limit of buff))
-FD = file dscriptor
-- stdin_fileno for interactive
-- provided from OpenFile() for batch
-*/
-int ReadCmd_I(string* line_read) {
-    getline(cin, *line_read);
-    return 1;
-}
-
-int ReadCmd_B(ifstream in_file_stream, string* line_read) {
-    getline(in_file_stream, *line_read);
-    return 1;
+    return write(STDOUT_FILENO, prompt_mssg.c_str(), prompt_mssg.length());
 }
 
 ///////// BATCH /////////
 /*
-try to open file 
-same returns as open()
-- success = file descriptor (int)
-- error = -1
+try to open file (doesn't check if successful)
+Then associate stream with it
+will return nullptr if couldn't associate stream
 ---------------
 assumes only 1 file provided
 */
-int OpenFile(char* argv[]) {
+FILE* OpenFile(char* argv[]) {
     // cout<<argv[1]<<endl;
-    return open(argv[1], O_RDONLY);
+
+    //fdopen associates stream with opening
+    //returns file* needed for getline()
+    int FD = open(argv[1], O_RDONLY);
+    //read mode = 'r'
+    char mode = 'r';
+    return fdopen(FD, &mode);
 }
 
 
 
-
-
-
-
+/*
+dealloc buff?
+*/
 int main(int argc, char* argv[]) {
 
-    char mode = GetMode(argc, argv);
+    char w_mode = GetMode(argc, argv);
+    char *buff = (char*)malloc(10 * sizeof(char));
+    size_t buff_size = 10*sizeof(char);
+    // cout<<*buff<< " buff"<<endl;
+    // cout<< w_mode<<" "<<buff_size<<endl;
+    
     // cout<<mode<<endl;
 
     //interactive
-    if (mode == 'I') {
+    if (w_mode == 'I') {
         //ask prompt while exit is not typed
         AskPrompt();
         string line;
-        ReadCmd_I(&line);
+        ReadCmd(stdin, &buff, &buff_size);
         cout<<endl<<line<<endl;
 
-    } else if (mode == 'B') {
-        OpenFile(argv);
-        // cout<<OpenFile(argv)<<endl;
+    } else if (w_mode == 'B') {
+        FILE* in_stream = OpenFile(argv);
+        // cout<< in_stream <<endl;
+        // int a =
+         ReadCmd(in_stream, &buff, &buff_size);
+        // cout<<" A "<<a<<endl; 
     }
 
     return 0;
