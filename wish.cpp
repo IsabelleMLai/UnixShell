@@ -3,6 +3,10 @@
 // use fstream for getline()
 #include <fstream>
 #include <sstream>
+//use. for strcmp()
+#include<string.h>
+//use for vector of strings for lines GetWords()
+#include <vector>
 
 #include <fcntl.h>
 #include <stdlib.h>
@@ -58,7 +62,7 @@ in_file_stream = input file stream
 puts line read into line_read_buff
 NNEED TO CHECK EEERRORS?
 */
-int ReadCmd(FILE* in_file_stream, char** line_read_buff, size_t* buff_size) {
+int ReadLine(FILE* in_file_stream, char** line_read_buff, size_t* buff_size) {
     //getline(char ** restrict linep, 
     //      size_t * restrict linecapp,
      //      FILE * restrict stream);
@@ -66,10 +70,59 @@ int ReadCmd(FILE* in_file_stream, char** line_read_buff, size_t* buff_size) {
     // linepcapp = size of buffer in memory 
     //      both will get updated as needed
     getline(line_read_buff, buff_size, in_file_stream);
-    cout<<"line "<<*line_read_buff<<endl;
+    // cout<<"line "<<*line_read_buff<<endl;
     return 1;
 }
 
+
+/*
+takes line read in as char array 'buff', 
+and its length
+converts it to a vector of strings and returns
+the vector
+----------------
+*/
+vector<string> GetWords(char* buff, int buff_length) {
+    string curr_word = "";
+    vector<string> words;
+
+    //loop through each character in the line
+    for(int i=0; i<buff_length; i++) {
+
+        if( ((buff[i] == ' ') && (curr_word.length() > 0)) || (buff[i] == '\n') ) {
+            words.push_back(curr_word);
+            curr_word = "";
+
+        } else if(buff[i] != ' '){
+            curr_word+=buff[i];
+        }
+    }
+    return words;
+}
+
+
+
+// char BuiltInCmd(char* buff, int buff_length) {
+//     string ex = "exit";
+
+//     char* end = nullptr;
+//     string cmd_str = CharArr_GetWord(buff, buff_length, end);
+//     buff_length -= cmd_str.length();
+//     cout<<"b. len. "<<buff_length<<endl;
+//     //has the word "exit" in it
+//     // if(cmd_str.compare(ex) == 0 ) {
+//     //     // cout<<"YY"<<endl;
+
+//     //     //check that thats the only thing typed
+//     //     if( CharArr_GetWord(end, buff_length, )== 5) {
+//     //         cout<< "good exit"<<endl;
+//     //         exit(0);
+//     //     } else {
+//     //         return 'e';
+//     //     }
+//     // } 
+//     return 'A';
+// }
 
 ///////// INTERACTIVE /////////
 /*
@@ -111,26 +164,28 @@ int main(int argc, char* argv[]) {
 
     char w_mode = GetMode(argc, argv);
     char *buff = (char*)malloc(10 * sizeof(char));
+    //buff_size = character count of buffer
     size_t buff_size = 10*sizeof(char);
-    // cout<<*buff<< " buff"<<endl;
-    // cout<< w_mode<<" "<<buff_size<<endl;
     
-    // cout<<mode<<endl;
-
     //interactive
     if (w_mode == 'I') {
         //ask prompt while exit is not typed
         AskPrompt();
+
         string line;
-        ReadCmd(stdin, &buff, &buff_size);
-        cout<<endl<<line<<endl;
+        ReadLine(stdin, &buff, &buff_size);
+
+        vector<string> words_in_line = GetWords(buff, (int)buff_size); 
+
+        for(string i:words_in_line) {
+            cout<< i << endl;
+        }
+        
 
     } else if (w_mode == 'B') {
         FILE* in_stream = OpenFile(argv);
         // cout<< in_stream <<endl;
-        // int a =
-         ReadCmd(in_stream, &buff, &buff_size);
-        // cout<<" A "<<a<<endl; 
+         ReadLine(in_stream, &buff, &buff_size);
     }
 
     return 0;
