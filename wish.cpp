@@ -80,8 +80,7 @@ puts line read into line_read_buff
 returns num char written or -1 if hit EOF
 NEED TO CHECK ERRORS?
 */
-int ReadLine(FILE* in_file_stream, char** line_read_buff, size_t* 
-buff_size) {
+int ReadLine(FILE* in_file_stream, char** line_read_buff, size_t* buff_size) {
     return getline(line_read_buff, buff_size, in_file_stream);
     
     // cout<<"line "<<*line_read_buff<<endl;
@@ -103,8 +102,7 @@ vector<string> GetWords(char* buff, int buff_length) {
     //loop through each character in the line
     for(int i=0; i<buff_length; i++) {
 
-        if( ((buff[i] == ' ') || (buff[i] == '\n')) && 
-(curr_word.length() > 0) ) {
+        if( ((buff[i] == ' ') || (buff[i] == '\n')) && (curr_word.length() > 0) ) {
             words.push_back(curr_word);
             curr_word = "";
 
@@ -129,8 +127,7 @@ to the found instance
 no error handling
 */
 int SearchWord(string sw, vector<string> words) {
-    vector<string>::iterator found = find(words.begin(), 
-words.end(), sw);
+    vector<string>::iterator found = find(words.begin(), words.end(), sw);
     if(found != words.end()) {
         int ind = found-words.begin();
         return ind;  
@@ -148,8 +145,7 @@ returns -1 if not found,
 returns index of the word with the char if found
 works with CharSplit to replace the word with <source, sc, target>
 */
-int SearchChar(char sc, vector<string> words, string* first_half, 
-string* sec_half) {
+int SearchChar(char sc, vector<string> words, string* first_half, string* sec_half) {
     int found = -1;
 
     string sc_word = "";
@@ -191,8 +187,7 @@ string* sec_half) {
 replaces a word in cmd with split up word
 source, char, target
 at an index with the word that contains the char*/
-void CharSplit(vector<string>* cmd, int ind, string source, string 
-target, string sc_word) {
+void CharSplit(vector<string>* cmd, int ind, string source, string target, string sc_word) {
     vector<string> copy;
     for(int i=0; i<ind; i++) {
         copy.push_back((*cmd)[i]);
@@ -235,8 +230,7 @@ int Redirect(vector<string>* curr_cmd, int still_running) {
 
     // vector<string>::iterator it2;
     // cout<<"cmd vec2::";
-    // for(it2 = (*curr_cmd).begin(); it2 != (*curr_cmd).end(); 
-it2++) {
+    // for(it2 = (*curr_cmd).begin(); it2 != (*curr_cmd).end(); it2++) {
     //     cout<<" "<<*it2;
     // }
     // cout<<endl<<endl;
@@ -259,11 +253,9 @@ it2++) {
             // (*curr_cmd).erase((*curr_cmd).begin() + (i-1));
         } 
         //get rid of the redirection from the cmd
-        (*curr_cmd).erase((*curr_cmd).begin() + found, 
-(*curr_cmd).begin() + (*curr_cmd).size());
+        (*curr_cmd).erase((*curr_cmd).begin() + found, (*curr_cmd).begin() + (*curr_cmd).size());
 
-        if( (output_fname.size()!=1) | (SearchWord(">", 
-output_fname)>=0) ) {
+        if( (output_fname.size()!=1) | (SearchWord(">", output_fname)>=0) ) {
             return -2;
         }
         
@@ -275,13 +267,11 @@ output_fname)>=0) ) {
         int output_fd = 0;
         if(still_running == 1) {
             // cout<<"open and append"<<endl;
-            output_fd = open(o_fname, O_WRONLY | O_CREAT | 
-O_APPEND);
+            output_fd = open(o_fname, O_WRONLY | O_CREAT | O_APPEND);
             // cout<<"run 1"<<endl;
         } else {
             // cout<<"open new "<<endl;
-            output_fd = open(o_fname, O_WRONLY | O_CREAT | 
-O_TRUNC);
+            output_fd = open(o_fname, O_WRONLY | O_CREAT | O_TRUNC);
             // cout<<"run 2: "<<output_fd<<endl;
         }
         
@@ -309,8 +299,7 @@ takes in 'words' = line with ? # of cmds
 returns number of commands 
 updates all_cmds to have 2d vec of each cmd
 */
-int NumCmds(vector<string> words, vector<vector<string>>* all_cmds) 
-{
+int NumCmds(vector<string> words, vector<vector<string>>* all_cmds) {
     //remaining = part of 'words' we haven't taken cmds from yet
     // cout<<"words::"<<endl;
     // for(string i:words){
@@ -368,8 +357,7 @@ int NumCmds(vector<string> words, vector<vector<string>>* all_cmds)
 
 // 	// Traversing a 2-D vector using iterators
 //     cout<<"NM. cmds ";
-// 	    for(it1 = (*all_cmds).begin(); it1 != 
-(*all_cmds).end(); it1++){
+// 	    for(it1 = (*all_cmds).begin(); it1 != (*all_cmds).end(); it1++){
 //             for(it2 = it1->begin();it2 != it1->end();it2++) {
 //                 cout<<*it2<<" ";
 //             }
@@ -418,8 +406,7 @@ char CD(vector<string> vec) {
                 // cout<<"success"<<endl;
                 char cwd[4000];
                 if (getcwd(cwd, 4000) != NULL) {
-                    // cout<<"Current working directory:  "<< 
-cwd<<endl;
+                    // cout<<"Current working directory:  "<< cwd<<endl;
                 }
                 return 'a';
             }
@@ -454,8 +441,7 @@ char Path(vector<string> vec, vector<string>* paths) {
     
 }
 
-char BuiltInCmd(vector<string> vec, int* EX, vector<string>* paths) 
-{
+char BuiltInCmd(vector<string> vec, int* EX, vector<string>* paths) {
 
     char cd =  CD(vec);
     char pa = Path(vec, paths);
@@ -541,11 +527,9 @@ char TryCmd(vector<string> cmd_vec, vector<string> paths) {
 
 /*
 try using select?
-can't usee fork for this if nnonne of themcann write to parent 
-values
+can't usee fork for this if nnonne of themcann write to parent values
 */
-char ForkCmds(int num_cmd, vector<vector<string>> all_cmds, int* 
-EX, vector<string>* path) {
+char ForkCmds(int num_cmd, vector<vector<string>> all_cmds, int* EX, vector<string>* path) {
     vector<pid_t> PIDs;
 
 
@@ -605,8 +589,7 @@ EX, vector<string>* path) {
             // cout<<"done waiting"<<endl;
             // if (WIFEXITED(status)) {
             //     int childReturnValue = WEXITSTATUS(status);
-            //     // cout<<"child return 
-"<<childReturnValue<<endl;
+            //     // cout<<"child return "<<childReturnValue<<endl;
 
             //     if(childReturnValue !=0) {
             //         *EX = -1;
@@ -630,8 +613,7 @@ same returns as write
 */
 int AskPrompt() {
     string prompt_mssg = "wish> ";
-    return write(STDOUT_FILENO, prompt_mssg.c_str(), 
-prompt_mssg.length());
+    return write(STDOUT_FILENO, prompt_mssg.c_str(), prompt_mssg.length());
 }
 
 ///////// BATCH /////////
@@ -704,8 +686,7 @@ int main(int argc, char* argv[]) {
             words_in_line = GetWords(buffer, (int)buffer_size); 
 
             /*
-            orig_fd should always point to original output 
-(terminal)
+            orig_fd should always point to original output (terminal)
             */
             int orig_fd = Redirect(&words_in_line, still_running);
             // cout<<"orig fd :"<<orig_fd<<endl;
@@ -713,8 +694,7 @@ int main(int argc, char* argv[]) {
                 PrintError();
                 exit(0);
             }
-            //if redirection worked to a new file, append to the 
-end
+            //if redirection worked to a new file, append to the end
             if(orig_fd >= 0) {
                 still_running = 1;
             }
@@ -775,14 +755,12 @@ end
 
                 words_in_line = GetWords(buffer, (int)buffer_size);
 
-                int new_fd = Redirect(&words_in_line, 
-still_running);
+                int new_fd = Redirect(&words_in_line, still_running);
                 if(new_fd == -2) {
                     PrintError();
                     exit(0);
                 }
-                //if redirection worked to a new file, append to 
-the end
+                //if redirection worked to a new file, append to the end
                 if(new_fd >= 0) {
                     still_running = 1;
                 }
@@ -795,8 +773,7 @@ the end
 
 
                 num_cmds=NumCmds(words_in_line, &all_cmds);
-                char fc = ForkCmds(num_cmds, all_cmds, &ex, 
-&paths);
+                char fc = ForkCmds(num_cmds, all_cmds, &ex, &paths);
                 if(  fc == 'e') {
                     PrintError();
                 } 
@@ -824,12 +801,4 @@ the end
 
     return 0;
 
-}for(int 
-idx 
-= 0; 
-idx < (int)PIDs.size(); idx++) {
-            //     cout<<"waiting "<<endl;
-            //     waitpid(PIDs[idx], NULL, 0);
-            //     PIDs.erase(PIDs.begin() + idx);
-            //     cout<<"donee wait"<<endl;
-            // }
+}
