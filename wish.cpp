@@ -33,7 +33,14 @@ void PrintError() {
     write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
-
+void PrintVecStr(vector<string> words) {
+    cout<<"printing vec:"<<endl;
+    vector<string>::iterator it1;
+    for(it1 = words.begin(); it1!=words.end();  it1++){
+        cout<<*it1<<" ";
+    }
+    cout<<endl<<endl;
+}
 /*
 takes in argc and argv to determine the mode
 returns modes as char 
@@ -306,6 +313,19 @@ int NumCmds(vector<string> words, vector<vector<string>>* all_cmds) {
     //     cout<<i<<" ";
     // }
     // cout<<endl<<endl;
+    string fir_half = "";
+    string sec_half = "";
+    int char_ind = SearchChar('&', words, &fir_half, &sec_half);
+    int loops = 0;
+    while(char_ind>=0) {
+        CharSplit(&words, char_ind+loops, fir_half, sec_half, "&");
+        loops+=2;
+        vector<string> sec_half_vec ;
+        sec_half_vec.push_back(sec_half);
+        
+        char_ind = SearchChar('&', sec_half_vec, &fir_half, &sec_half);
+    }
+    // PrintVecStr(words);
 
     vector<string> remaining = words;
     vector<string> curr_cmd;
@@ -675,6 +695,7 @@ int main(int argc, char* argv[]) {
             //ask prompt while exit is not typed
             if(AskPrompt() < 0) {
                 PrintError();
+                // cout<<"1"<<endl;
             }
 
             // string line;
@@ -692,6 +713,7 @@ int main(int argc, char* argv[]) {
             // cout<<"orig fd :"<<orig_fd<<endl;
             if(orig_fd == -2) {
                 PrintError();
+                // cout<<"2"<<endl;
                 exit(0);
             }
             //if redirection worked to a new file, append to the end
@@ -707,6 +729,7 @@ int main(int argc, char* argv[]) {
             char fc = ForkCmds(num_cmds, all_cmds, &ex, &paths);
             if(fc == 'e') {
                 PrintError();
+                // cout<<"3"<<endl;
             } 
 
             //clean up for the next loop
@@ -731,6 +754,8 @@ int main(int argc, char* argv[]) {
         if(in_stream == NULL) {
             PrintError();
             has_next_read = -1;
+            // cout<<"4"<<endl;
+            exit(1);
         }
         
         while( has_next_read > 0) {
@@ -758,6 +783,7 @@ int main(int argc, char* argv[]) {
                 int new_fd = Redirect(&words_in_line, still_running);
                 if(new_fd == -2) {
                     PrintError();
+                    // cout<<"5"<<endl;
                     exit(0);
                 }
                 //if redirection worked to a new file, append to the end
@@ -776,6 +802,7 @@ int main(int argc, char* argv[]) {
                 char fc = ForkCmds(num_cmds, all_cmds, &ex, &paths);
                 if(  fc == 'e') {
                     PrintError();
+                    // cout<<"6"<<endl;
                 } 
                 
                 
@@ -797,6 +824,8 @@ int main(int argc, char* argv[]) {
     } else {
         //runnning the program didn't work with either mode = error
         PrintError();
+        // cout<<"7"<<endl;
+        exit(1);
     }
 
     return 0;
